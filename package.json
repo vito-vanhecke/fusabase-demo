@@ -1,7 +1,7 @@
 {
   "name": "fusabase-demo",
   "version": "1.0.0",
-  "description": "Three small demos for Oracle Backend with Firebase APIs (Fusabase): auth, database and storage",
+  "description": "Demos for Oracle Backend with Firebase APIs (Fusabase): auth, database, storage and realtime",
   "type": "module",
   "main": "index.js",
   "scripts": {
