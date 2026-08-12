@@ -19,11 +19,13 @@ import {
 } from "fusabase/oracledb";
 import { fusabaseConfig } from "../../fusabase-config.js";
 
-// onSnapshot's default transport polls every 29s. There's also a WebSocket
-// transport (use_socket: true) for instant updates, but it needs the realtime
-// path (wss://<host>/ords/baas-realtime/...) to pass WebSocket upgrades at your
-// reverse proxy, which isn't set up here. So we fall back to long polling on
-// the 5s minimum, which works over plain HTTP.
+// onSnapshot's default transport polls every 29s; we lower it to the 5s
+// minimum. There's also a WebSocket transport (use_socket: true) for instant
+// push: with the reverse proxy configured to pass WebSocket upgrades on
+// wss://<host>/ords/baas-realtime/..., the socket connects and the server holds
+// it open - but getting change notifications actually delivered also depends on
+// the database change feed (CQN) being wired up, so long polling is the
+// dependable default here.
 const app = initializeApp({ ...fusabaseConfig, long_polling_interval: 5 });
 const auth = getAuth(app);
 const db = getOracledb(app);
