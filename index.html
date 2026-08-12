@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fusabase Demos</title>
+    <link rel="stylesheet" href="/shared/style.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="demo-header">
+        <h1>
+          <span class="step">Oracle Backend with Firebase APIs</span>
+          Fusabase demos
+        </h1>
+      </header>
+      <p>
+        Three small demos that together form a todo application backed by an
+        Oracle Database through
+        <a href="https://docs.oracle.com/en/database/oracle/backend-for-firebase/"
+          >Oracle Backend with Firebase APIs</a
+        >. Sign in once in the first demo &mdash; the session carries over to the
+        other two.
+      </p>
+      <ul class="demo-list">
+        <li>
+          <a href="/demos/01-auth/">
+            <span class="step">Demo 1</span>
+            <h2>Authentication</h2>
+            <p>Email/password sign-up and sign-in, plus Google federated login.</p>
+          </a>
+        </li>
+        <li>
+          <a href="/demos/02-database/">
+            <span class="step">Demo 2</span>
+            <h2>Database</h2>
+            <p>A per-user todo list on Firestore-style collections, guarded by security rules.</p>
+          </a>
+        </li>
+        <li>
+          <a href="/demos/03-storage/">
+            <span class="step">Demo 3</span>
+            <h2>Storage</h2>
+            <p>File attachments per user with resumable uploads and download URLs.</p>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </body>
+</html>

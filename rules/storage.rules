@@ -1,0 +1,12 @@
+// Storage security rules for per-user attachment folders.
+// Paste into the Console under your project's Storage > Security Rules,
+// validate, then publish. No matching rule means every request is denied.
+
+match /attachments/{userId}/{file=**} {
+  // Only the owner of the folder can list, download, upload and delete,
+  // and uploads are capped at 10 MB.
+  allow get, list: if request.auth != null && request.auth.uid == userId;
+  allow create:    if request.auth != null && request.auth.uid == userId
+                   && resource.size < 10 * 1024 * 1024;
+  allow delete:    if request.auth != null && request.auth.uid == userId;
+}

@@ -1,16 +1,27 @@
 {
   "name": "fusabase-demo",
   "version": "1.0.0",
-  "description": "",
+  "description": "Three small demos for Oracle Backend with Firebase APIs (Fusabase): auth, database and storage",
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "oracle",
+    "ords",
+    "fusabase",
+    "firebase",
+    "baas"
+  ],
+  "author": "Vito Van Hecke",
   "license": "ISC",
   "dependencies": {
     "fusabase": "^26.2.0"
+  },
+  "devDependencies": {
+    "vite": "^7.1.2"
   }
 }

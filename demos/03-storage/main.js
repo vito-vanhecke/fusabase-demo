@@ -1,0 +1,139 @@
+import { initializeApp } from "fusabase/app";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut,
+} from "fusabase/auth";
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+  listAll,
+  deleteObject,
+} from "fusabase/storage";
+import { fusabaseConfig } from "../../fusabase-config.js";
+
+const app = initializeApp(fusabaseConfig);
+const auth = getAuth(app);
+const storage = getStorage(app);
+
+const $ = (id) => document.getElementById(id);
+const message = $("message");
+let currentUser = null;
+
+function showError(err) {
+  message.textContent = `${err.code ?? "error"}: ${err.message}`;
+  message.className = "banner error";
+}
+
+function clearMessage() {
+  message.textContent = "";
+}
+
+// --- auth gate -------------------------------------------------------------
+
+onAuthStateChanged(auth, (user) => {
+  currentUser = user;
+  $("signed-out").hidden = !!user;
+  $("signed-in").hidden = !user;
+  if (user) {
+    $("user-email").textContent = user.email ?? user.uid;
+    loadFiles();
+  }
+});
+
+$("signin-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  clearMessage();
+  try {
+    await signInWithEmailAndPassword(
+      auth,
+      $("signin-email").value,
+      $("signin-password").value
+    );
+  } catch (err) {
+    showError(err);
+  }
+});
+
+$("signout-link").addEventListener("click", (e) => {
+  e.preventDefault();
+  signOut(auth);
+});
+
+// --- storage ---------------------------------------------------------------
+
+// Each user gets their own folder; the storage rule matches this layout.
+const userFolder = () => ref(storage, `attachments/${currentUser.uid}`);
+
+$("upload-form").addEventListener("submit", (e) => {
+  e.preventDefault();
+  clearMessage();
+  const file = $("file-input").files[0];
+  if (!file) return;
+
+  const fileRef = ref(storage, `attachments/${currentUser.uid}/${file.name}`);
+  const task = uploadBytesResumable(fileRef, file, { contentType: file.type });
+  const progress = $("progress");
+  progress.classList.add("active");
+
+  task.on(
+    "state_changed",
+    (snap) => {
+      const pct = (snap.bytesTransferred / snap.totalBytes) * 100;
+      $("progress-bar").style.width = `${pct}%`;
+    },
+    (err) => {
+      progress.classList.remove("active");
+      showError(err);
+    },
+    async () => {
+      progress.classList.remove("active");
+      $("progress-bar").style.width = "0%";
+      $("upload-form").reset();
+      await loadFiles();
+    }
+  );
+});
+
+async function loadFiles() {
+  try {
+    const result = await listAll(userFolder());
+    const list = $("file-list");
+    list.innerHTML = "";
+    for (const item of result.items) {
+      const li = document.createElement("li");
+
+      const link = document.createElement("a");
+      link.textContent = item.name;
+      link.className = "title";
+      link.target = "_blank";
+      link.href = await getDownloadURL(item);
+
+      const del = document.createElement("button");
+      del.className = "icon-btn";
+      del.textContent = "×";
+      del.title = "Delete";
+      del.addEventListener("click", async () => {
+        clearMessage();
+        try {
+          await deleteObject(item);
+          await loadFiles();
+        } catch (err) {
+          showError(err);
+        }
+      });
+
+      li.append(link, del);
+      list.appendChild(li);
+    }
+    $("file-count").textContent = result.items.length
+      ? `(${result.items.length})`
+      : "";
+    $("file-empty").hidden = result.items.length > 0;
+  } catch (err) {
+    showError(err);
+  }
+}

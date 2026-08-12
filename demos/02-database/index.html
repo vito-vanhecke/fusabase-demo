@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Demo 2 · Database</title>
+    <link rel="stylesheet" href="/shared/style.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="demo-header">
+        <h1>
+          <span class="step">Demo 2</span>
+          Database &mdash; a per-user todo list
+        </h1>
+        <a href="/">&larr; all demos</a>
+      </header>
+
+      <!-- Signed OUT: minimal gate -->
+      <section id="signed-out" hidden>
+        <div class="card">
+          <h2>Sign in first</h2>
+          <form id="signin-form">
+            <label for="signin-email">Email</label>
+            <input id="signin-email" type="email" autocomplete="email" required />
+            <label for="signin-password">Password</label>
+            <input id="signin-password" type="password" autocomplete="current-password" required />
+            <button class="btn" type="submit">Sign in</button>
+          </form>
+          <p class="hint">
+            No account yet, or want Google sign-in? Head to
+            <a href="/demos/01-auth/">Demo 1: Authentication</a>.
+          </p>
+        </div>
+      </section>
+
+      <!-- Signed IN: the todo app -->
+      <section id="signed-in" hidden>
+        <div class="card">
+          <h2>My todos <span class="mono" id="todo-count"></span></h2>
+          <form id="add-form" class="row">
+            <input id="new-title" type="text" placeholder="What needs doing?" required />
+            <button class="btn" type="submit">Add</button>
+          </form>
+          <ul id="todo-list" class="items"></ul>
+          <div id="todo-empty" class="empty" hidden>Nothing yet. Add your first todo.</div>
+        </div>
+        <p class="hint">
+          Signed in as <span id="user-email"></span> &middot;
+          <a href="#" id="signout-link">sign out</a> &middot;
+          next: <a href="/demos/03-storage/">Demo 3: Storage</a>
+        </p>
+      </section>
+
+      <div id="message" class="banner"></div>
+    </div>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

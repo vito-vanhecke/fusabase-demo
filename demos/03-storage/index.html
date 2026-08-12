@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Demo 3 · Storage</title>
+    <link rel="stylesheet" href="/shared/style.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="demo-header">
+        <h1>
+          <span class="step">Demo 3</span>
+          Storage &mdash; per-user attachments
+        </h1>
+        <a href="/">&larr; all demos</a>
+      </header>
+
+      <!-- Signed OUT: minimal gate -->
+      <section id="signed-out" hidden>
+        <div class="card">
+          <h2>Sign in first</h2>
+          <form id="signin-form">
+            <label for="signin-email">Email</label>
+            <input id="signin-email" type="email" autocomplete="email" required />
+            <label for="signin-password">Password</label>
+            <input id="signin-password" type="password" autocomplete="current-password" required />
+            <button class="btn" type="submit">Sign in</button>
+          </form>
+          <p class="hint">
+            No account yet, or want Google sign-in? Head to
+            <a href="/demos/01-auth/">Demo 1: Authentication</a>.
+          </p>
+        </div>
+      </section>
+
+      <!-- Signed IN: uploads -->
+      <section id="signed-in" hidden>
+        <div class="card">
+          <h2>Upload an attachment</h2>
+          <form id="upload-form" class="row">
+            <input id="file-input" type="file" required />
+            <button class="btn" type="submit">Upload</button>
+          </form>
+          <div id="progress" class="progress"><div class="bar" id="progress-bar"></div></div>
+        </div>
+
+        <div class="card">
+          <h2>My files <span class="mono" id="file-count"></span></h2>
+          <ul id="file-list" class="items"></ul>
+          <div id="file-empty" class="empty" hidden>No files yet. Upload one above.</div>
+        </div>
+
+        <p class="hint">
+          Signed in as <span id="user-email"></span> &middot;
+          <a href="#" id="signout-link">sign out</a>
+        </p>
+      </section>
+
+      <div id="message" class="banner"></div>
+    </div>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

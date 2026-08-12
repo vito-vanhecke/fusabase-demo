@@ -1,0 +1,15 @@
+// Database security rules for the "todos" collection.
+// Paste into the Console under your project's Database > Security Rules,
+// validate, then publish. No matching rule means every request is denied.
+
+match /todos/{todoId} {
+  // Anyone signed in may create a todo, but only as themselves.
+  allow create: if request.auth != null
+                && request.resource.data.uid == request.auth.uid;
+
+  // You can only see and change your own todos.
+  allow get, list:      if request.auth != null
+                        && resource.data.uid == request.auth.uid;
+  allow update, delete: if request.auth != null
+                        && resource.data.uid == request.auth.uid;
+}
