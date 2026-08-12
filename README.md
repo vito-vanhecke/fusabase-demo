@@ -64,10 +64,35 @@ not from hiding those ids.
 `onSnapshot` (demo 4) has two transports:
 
 - **Long polling** (default) — polls every **29 s** unless you lower it with
-  `long_polling_interval` (5 s minimum). Demo 4 uses 5 s. Works over plain HTTP.
-- **WebSocket** (`use_socket: true`) — instant, but connects to
-  `wss://<host>/ords/baas-realtime/…`, so your reverse proxy must pass WebSocket
-  upgrades on that path.
+  `long_polling_interval` (5 s minimum). Demo 4 uses 5 s. Handles creates,
+  updates and deletes, both directions, over plain HTTP.
+- **WebSocket push** (`use_socket: true`) — creates/updates arrive live in ~2 s.
+  Getting it working on a self-hosted stack took three things:
+  1. **Reverse proxy** must pass WebSocket upgrades on `/ords/baas-realtime/`
+     (a `map $http_upgrade $connection_upgrade` + `Upgrade`/`Connection` headers
+     with a long `proxy_read_timeout`).
+  2. **DB change feed (CQN)** must work — it does out of the box (`BAAS_ROLE`
+     holds `CHANGE NOTIFICATION`; a write enqueues onto an AQ queue ORDS drains).
+  3. **ORDS JWT profile** for the BaaS issuer, so ORDS can verify the socket's
+     snapshot token. This was **not provisioned automatically** — without it
+     ORDS logs `No JWK State was identified to verify this JWT` and silently
+     drops the push. Register it as the project schema:
+
+     ```sql
+     BEGIN
+       OAUTH.CREATE_JWT_PROFILE(
+         p_issuer   => 'baas_onprem#<auth_id>',
+         p_audience => '<project_id>',
+         p_jwk_url  => 'https://<host>/ords/<schema>/_/baas-services/idm/signingKey/<project_id>/jwk'
+       );
+       COMMIT;
+     END;
+     /
+     ```
+
+  Caveat in this reference build: **deletes don't push over the socket** (they
+  do over polling), so demo 4 stays on long polling for dependable two-way sync
+  of every operation.
 
 ## Regenerating the blog screenshots
 
