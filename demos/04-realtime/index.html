@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Demo 4 · Realtime</title>
+    <link rel="stylesheet" href="/shared/style.css" />
+    <style>
+      .devices {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.25rem;
+      }
+      @media (max-width: 640px) {
+        .devices { grid-template-columns: 1fr; }
+      }
+      .device .card { margin-bottom: 0; }
+      .device h2 {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .live-dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: #cfcfcf;
+        flex-shrink: 0;
+      }
+      .live-dot.on {
+        background: #1e6b3a;
+        box-shadow: 0 0 0 0 rgba(30, 107, 58, 0.5);
+        animation: pulse 1.6s infinite;
+      }
+      @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(30, 107, 58, 0.5); }
+        70% { box-shadow: 0 0 0 7px rgba(30, 107, 58, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(30, 107, 58, 0); }
+      }
+      .wrap.wide { max-width: 860px; }
+      li.flash { animation: flash 1s ease; }
+      @keyframes flash {
+        from { background: #fff4e6; }
+        to { background: transparent; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap wide">
+      <header class="demo-header">
+        <h1>
+          <span class="step">Demo 4</span>
+          Realtime &mdash; the same list on two devices
+        </h1>
+        <a href="/">&larr; all demos</a>
+      </header>
+
+      <section id="signed-out" hidden>
+        <div class="card">
+          <h2>Sign in first</h2>
+          <form id="signin-form">
+            <label for="signin-email">Email</label>
+            <input id="signin-email" type="email" autocomplete="email" required />
+            <label for="signin-password">Password</label>
+            <input id="signin-password" type="password" autocomplete="current-password" required />
+            <button class="btn" type="submit">Sign in</button>
+          </form>
+          <p class="hint">
+            Need an account or Google sign-in? Start at
+            <a href="/demos/01-auth/">Demo 1: Authentication</a>.
+          </p>
+        </div>
+      </section>
+
+      <section id="signed-in" hidden>
+        <p class="hint" style="margin-bottom:1rem">
+          Two independent <code>onSnapshot</code> listeners on the same
+          <code>todos</code> collection. Type in one device &mdash; the other
+          updates on its own, no refresh, no polling loop in your code.
+        </p>
+        <div class="devices">
+          <div class="device">
+            <div class="card">
+              <h2><span class="live-dot" id="dot-a"></span> Device A</h2>
+              <form class="add-form row" data-device="a">
+                <input class="new-title" type="text" placeholder="Add a todo here&hellip;" required />
+                <button class="btn" type="submit">Add</button>
+              </form>
+              <ul class="items" id="list-a"></ul>
+              <div class="empty" id="empty-a" hidden>No todos yet.</div>
+            </div>
+          </div>
+          <div class="device">
+            <div class="card">
+              <h2><span class="live-dot" id="dot-b"></span> Device B</h2>
+              <form class="add-form row" data-device="b">
+                <input class="new-title" type="text" placeholder="&hellip;or here" required />
+                <button class="btn" type="submit">Add</button>
+              </form>
+              <ul class="items" id="list-b"></ul>
+              <div class="empty" id="empty-b" hidden>No todos yet.</div>
+            </div>
+          </div>
+        </div>
+        <p class="hint" style="margin-top:1rem">
+          Signed in as <span id="user-email"></span> &middot;
+          <a href="#" id="signout-link">sign out</a>
+        </p>
+      </section>
+
+      <div id="message" class="banner"></div>
+    </div>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

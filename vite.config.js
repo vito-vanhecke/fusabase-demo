@@ -11,6 +11,7 @@ export default defineConfig({
         auth: `${root}demos/01-auth/index.html`,
         database: `${root}demos/02-database/index.html`,
         storage: `${root}demos/03-storage/index.html`,
+        realtime: `${root}demos/04-realtime/index.html`,
       },
     },
   },

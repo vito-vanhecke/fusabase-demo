@@ -1,12 +1,19 @@
 // Storage security rules for per-user attachment folders.
 // Paste into the Console under your project's Storage > Security Rules,
 // validate, then publish. No matching rule means every request is denied.
+//
+// Two quirks on the 26.1 build these demos ran against:
+//   - The recursive wildcard {file=**} was rejected as "Invalid CEL rule".
+//     A single-segment {fileName} matches the attachments/<uid>/<file> layout.
+//   - The upload size lives in request.resource.size. resource.size and
+//     request.resource.data.size publish fine but then DENY every create,
+//     because a create has no stored resource yet.
 
-match /attachments/{userId}/{file=**} {
+match /attachments/{userId}/{fileName} {
   // Only the owner of the folder can list, download, upload and delete,
   // and uploads are capped at 10 MB.
   allow get, list: if request.auth != null && request.auth.uid == userId;
   allow create:    if request.auth != null && request.auth.uid == userId
-                   && request.resource.data.size < 10 * 1024 * 1024;
+                   && request.resource.size < 10 * 1024 * 1024;
   allow delete:    if request.auth != null && request.auth.uid == userId;
 }
