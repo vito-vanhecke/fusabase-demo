@@ -2,9 +2,6 @@ import { initializeApp } from "fusabase/app";
 import { getOracledb } from "fusabase/oracledb";
 import { getStorage } from "fusabase/storage";
 import { getAuth } from "fusabase/auth";
-import { authUI } from "fusabase/ui";
-
-
 const fusabaseConfig = {
     "schema": "vito",
     "app_name": "WEBDEMO",
@@ -31,3 +28,5 @@ const fusabase_storage = getStorage(fusabase_app);
 
 // get auth instance
 const fusabase_auth = getAuth(fusabase_app);
+
+console.log(fusabase_db.toJSON());
