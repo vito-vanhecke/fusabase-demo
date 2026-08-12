@@ -72,6 +72,7 @@ $("signout-link").addEventListener("click", (e) => {
 const todos = collection(db, "todos");
 
 async function loadTodos() {
+  if (!currentUser) return;
   clearMessage();
   try {
     // Only my todos, newest first. Both the rule and the index for this
@@ -102,7 +103,7 @@ function renderTodos(snaps) {
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.checked = !!data.done;
-    checkbox.addEventListener("change", () => toggleTodo(snap.id, !data.done));
+    checkbox.addEventListener("change", () => toggleTodo(snap.id, checkbox.checked));
 
     const title = document.createElement("span");
     title.className = "title";
@@ -124,10 +125,12 @@ function renderTodos(snaps) {
 $("add-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   clearMessage();
+  const title = $("new-title").value.trim();
+  if (!title) return;
   try {
     await addDoc(todos, {
       uid: currentUser.uid,
-      title: $("new-title").value.trim(),
+      title,
       done: false,
       createdAt: Date.now(),
     });
@@ -144,6 +147,7 @@ async function toggleTodo(id, done) {
     await updateDoc(doc(db, "todos", id), { done });
     await loadTodos();
   } catch (err) {
+    await loadTodos(); // resync the checkbox with what's actually stored
     showError(err);
   }
 }

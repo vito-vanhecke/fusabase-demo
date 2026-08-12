@@ -63,7 +63,7 @@ try {
   await shot("fusabase-demo1-signedin");
 } catch {
   console.log("sign-in failed:", await errorText());
-  await shot("fusabase-demo1-error");
+  await shot("fusabase-demo1-cors-error");
   await browser.close();
   process.exit(1);
 }

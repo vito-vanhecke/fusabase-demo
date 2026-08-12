@@ -7,6 +7,6 @@ match /attachments/{userId}/{file=**} {
   // and uploads are capped at 10 MB.
   allow get, list: if request.auth != null && request.auth.uid == userId;
   allow create:    if request.auth != null && request.auth.uid == userId
-                   && resource.size < 10 * 1024 * 1024;
+                   && request.resource.data.size < 10 * 1024 * 1024;
   allow delete:    if request.auth != null && request.auth.uid == userId;
 }

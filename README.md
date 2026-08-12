@@ -8,7 +8,7 @@ Oracle Database, using the
 
 Companion code for the blog series
 [Oracle Backend with Firebase APIs](https://vvanhecke.be/en/blog/oracle-backend-firebase-apis-setup/),
-in particular **Part 2: Feature tour and core configuration**.
+in particular **Part 2: Hands-On with Auth, Database and Storage**.
 
 | Demo | What it shows |
 | --- | --- |

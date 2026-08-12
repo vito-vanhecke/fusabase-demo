@@ -87,6 +87,7 @@ $("upload-form").addEventListener("submit", (e) => {
     },
     (err) => {
       progress.classList.remove("active");
+      $("progress-bar").style.width = "0%";
       showError(err);
     },
     async () => {
@@ -99,40 +100,44 @@ $("upload-form").addEventListener("submit", (e) => {
 });
 
 async function loadFiles() {
+  if (!currentUser) return;
   try {
     const result = await listAll(userFolder());
-    const list = $("file-list");
-    list.innerHTML = "";
-    for (const item of result.items) {
-      const li = document.createElement("li");
 
-      const link = document.createElement("a");
-      link.textContent = item.name;
-      link.className = "title";
-      link.target = "_blank";
-      link.href = await getDownloadURL(item);
+    // resolve all download URLs before touching the DOM, so a failure
+    // can't leave a half-rendered list behind
+    const rows = await Promise.all(
+      result.items.map(async (item) => {
+        const li = document.createElement("li");
 
-      const del = document.createElement("button");
-      del.className = "icon-btn";
-      del.textContent = "×";
-      del.title = "Delete";
-      del.addEventListener("click", async () => {
-        clearMessage();
-        try {
-          await deleteObject(item);
-          await loadFiles();
-        } catch (err) {
-          showError(err);
-        }
-      });
+        const link = document.createElement("a");
+        link.textContent = item.name;
+        link.className = "title";
+        link.target = "_blank";
+        link.href = await getDownloadURL(item);
 
-      li.append(link, del);
-      list.appendChild(li);
-    }
-    $("file-count").textContent = result.items.length
-      ? `(${result.items.length})`
-      : "";
-    $("file-empty").hidden = result.items.length > 0;
+        const del = document.createElement("button");
+        del.className = "icon-btn";
+        del.textContent = "×";
+        del.title = "Delete";
+        del.addEventListener("click", async () => {
+          clearMessage();
+          try {
+            await deleteObject(item);
+            await loadFiles();
+          } catch (err) {
+            showError(err);
+          }
+        });
+
+        li.append(link, del);
+        return li;
+      })
+    );
+
+    $("file-list").replaceChildren(...rows);
+    $("file-count").textContent = rows.length ? `(${rows.length})` : "";
+    $("file-empty").hidden = rows.length > 0;
   } catch (err) {
     showError(err);
   }
