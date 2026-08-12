@@ -68,11 +68,20 @@ $("signout-link").addEventListener("click", (e) => {
 // Each user gets their own folder; the storage rule matches this layout.
 const userFolder = () => ref(storage, `attachments/${currentUser.uid}`);
 
+// The storage rule can't cap upload size for resumable uploads (the size
+// isn't presented to the rule on create), so we enforce the limit here.
+const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
+
 $("upload-form").addEventListener("submit", (e) => {
   e.preventDefault();
   clearMessage();
   const file = $("file-input").files[0];
   if (!file) return;
+
+  if (file.size > MAX_UPLOAD_BYTES) {
+    showError({ code: "storage/file-too-large", message: "File exceeds the 10 MB limit." });
+    return;
+  }
 
   const fileRef = ref(storage, `attachments/${currentUser.uid}/${file.name}`);
   const task = uploadBytesResumable(fileRef, file, { contentType: file.type });

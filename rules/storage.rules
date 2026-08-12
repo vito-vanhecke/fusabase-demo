@@ -2,18 +2,20 @@
 // Paste into the Console under your project's Storage > Security Rules,
 // validate, then publish. No matching rule means every request is denied.
 //
-// Two quirks on the 26.1 build these demos ran against:
-//   - The recursive wildcard {file=**} was rejected as "Invalid CEL rule".
+// Quirks found on the 26.1 build these demos ran against:
+//   - The recursive wildcard {file=**} is rejected as "Invalid CEL rule".
 //     A single-segment {fileName} matches the attachments/<uid>/<file> layout.
-//   - The upload size lives in request.resource.size. resource.size and
-//     request.resource.data.size publish fine but then DENY every create,
-//     because a create has no stored resource yet.
+//   - There is no dependable size field for `create`. resource.size and
+//     request.resource.data.size publish but DENY every create; and even
+//     request.resource.size (which works for a plain uploadBytes) is NOT
+//     populated for a *resumable* upload (uploadBytesResumable), so a size
+//     gate there silently denies every real upload with ORA-20012.
+//     So the rule enforces ownership only; cap the size client-side instead
+//     (the app checks file.size before starting the upload).
 
 match /attachments/{userId}/{fileName} {
-  // Only the owner of the folder can list, download, upload and delete,
-  // and uploads are capped at 10 MB.
+  // Only the owner of the folder can list, download, upload and delete.
   allow get, list: if request.auth != null && request.auth.uid == userId;
-  allow create:    if request.auth != null && request.auth.uid == userId
-                   && request.resource.size < 10 * 1024 * 1024;
+  allow create:    if request.auth != null && request.auth.uid == userId;
   allow delete:    if request.auth != null && request.auth.uid == userId;
 }
